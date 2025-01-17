@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Guessing Game</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin-top: 50px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        h2 {
+            text-align: center;
+            color: #007bff;
+        }
+        
+        .color-box {
+            width: 100px;
+            height: 100px;
+            margin: 10px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: transform 0.3s;
+        }
+        
+        .color-box:hover {
+            transform: scale(1.1);
+        }
+        
+        .btn {
+            width: 100%;
+        }
+        
+        #playAgainBtn {
+            display: none;
+            margin-top: 20px;
+        }
+        
+        #startGameBtn {
+            display: block;
+            margin-top: 20px;
+        }
+        
+        .btn-container {
+            text-align: center;
+        }
+        
+        #result {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Color Guessing Game</h2>
+        <p>Guess the correct color!</p>
+
+        <div id="result"></div>
+
+        <div id="colorOptions" class="d-flex justify-content-center">
+            <!-- Color boxes will appear here -->
+        </div>
+
+        <div class="btn-container">
+            <button class="btn btn-secondary" id="playAgainBtn" onclick="startGame()">Play Again</button>
+            <button class="btn btn-primary" id="startGameBtn" onclick="startGame()">Start Game</button>
+        </div>
+    </div>
+
+    <script>
+        let secretColor;
+        let attempts = 0;
+
+        const colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange'];
+
+        // Function to start the game
+        function startGame() {
+            // Choose a random color as the secret color
+            secretColor = colors[Math.floor(Math.random() * colors.length)];
+            attempts = 0;
+            document.getElementById('result').innerHTML = '';
+            document.getElementById('colorOptions').innerHTML = '';
+            displayColorBoxes();
+            document.getElementById('startGameBtn').style.display = 'none'; // Hide Start Game button
+            document.getElementById('playAgainBtn').style.display = 'none'; // Hide Play Again button
+        }
+
+        // Function to display color boxes
+        function displayColorBoxes() {
+            for (let i = 0; i < colors.length; i++) { // Loop to create color boxes
+                let colorBox = document.createElement('div');
+                colorBox.classList.add('color-box');
+                colorBox.style.backgroundColor = colors[i];
+                colorBox.onclick = function() {
+                    checkGuess(colors[i]);
+                };
+                document.getElementById('colorOptions').appendChild(colorBox);
+            }
+        }
+
+        // Function to check the user's guess
+        function checkGuess(selectedColor) {
+            attempts++;
+
+            let message = "";
+
+            if (attempts < 3) {
+                if (selectedColor === secretColor) {
+                    message = `
+                        <div class="alert alert-success">Congratulations! You guessed the correct color!</div>
+                        <p>It took you ${attempts} attempt(s) to guess the correct color.</p>
+                    `;
+                    disableColorBoxes(); // Disable boxes after correct guess
+                    document.getElementById('playAgainBtn').style.display = 'block'; // Show Play Again button
+                } else {
+                    message = `
+                        <div class="alert alert-danger">Oops! Try again. That's not the right color!</div>
+                        <p>You have ${3 - attempts} attempt(s) left.</p>
+                    `;
+                }
+            } else {
+                message = `
+                    <div class="alert alert-danger">Sorry! You've used all your attempts.</div>
+                    <p>The correct color was ${secretColor}.</p>
+                    <button class="btn btn-secondary" onclick="startGame()">Try Again</button>
+                `;
+                disableColorBoxes(); // Disable boxes after all attempts
+            }
+
+            document.getElementById('result').innerHTML = message;
+        }
+
+        // Function to disable the color boxes
+        function disableColorBoxes() {
+            const boxes = document.querySelectorAll('.color-box');
+            for (let i = 0; i < boxes.length; i++) { // Loop through boxes and disable pointer events
+                boxes[i].style.pointerEvents = 'none'; // Disable clicking
+            }
+        }
+
+        // Initialize the game when the page loads
+        window.onload = function() {
+            document.getElementById('startGameBtn').style.display = 'block'; // Show Start Game button
+        };
+    </script>
+</body>
+
+</html>
